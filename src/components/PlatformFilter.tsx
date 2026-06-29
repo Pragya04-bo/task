@@ -2,6 +2,7 @@ import type { Platform } from "@/types";
 import { PLATFORMS, getPlatformLabel } from "@/utils/dataHelpers";
 import { SearchBar } from "./SearchBar";
 import { Camera, Play, Video } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface PlatformFilterProps {
   selected: Platform;
@@ -29,8 +30,8 @@ export function PlatformFilter({
 
   return (
     <div className="mb-8 space-y-4">
-      {/* Platform Selector Pills */}
-      <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl max-w-md mx-auto border border-gray-200/50 dark:border-gray-700/50">
+      {/* Animated Platform Selector Pills */}
+      <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl max-w-md mx-auto border border-gray-200/50 dark:border-gray-700/50 shadow-inner">
         {PLATFORMS.map((p) => {
           const isActive = selected === p;
           return (
@@ -38,12 +39,19 @@ export function PlatformFilter({
               key={p}
               type="button"
               onClick={() => onChange(p)}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
+              className={`relative flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors duration-200 z-10 ${
                 isActive
-                  ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm shadow-gray-200/50 dark:shadow-none scale-[1.02]"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50"
+                  ? "text-gray-900 dark:text-white"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
+              {isActive && (
+                <motion.div
+                  layoutId="activePlatformTab"
+                  className="absolute inset-0 bg-white dark:bg-gray-900 rounded-xl shadow-sm shadow-gray-200/50 dark:shadow-none -z-10"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
               {getPlatformIcon(p)}
               <span>{getPlatformLabel(p)}</span>
             </button>

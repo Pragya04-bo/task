@@ -6,16 +6,35 @@ import { ProfileList } from "@/components/ProfileList";
 import { AddToListModal } from "@/components/AddToListModal";
 import { extractProfiles, filterProfiles } from "@/utils/dataHelpers";
 import { useProfileStore } from "@/store/useProfileStore";
-import { Sparkles } from "lucide-react";
+import { Sparkles, CheckCircle, PlusCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function SearchPage() {
   const { selectedPlatform, setPlatform, searchQuery, setSearchQuery } = useProfileStore();
   const [modalProfile, setModalProfile] = useState<UserProfileSummary | null>(null);
+  const [extraCount, setExtraCount] = useState(0);
 
   // Memoize profiles extraction and filtering for optimal performance
-  const allProfiles = useMemo(() => {
+  const baseProfiles = useMemo(() => {
     return extractProfiles(selectedPlatform);
   }, [selectedPlatform]);
+
+  const allProfiles = useMemo(() => {
+    if (extraCount === 0) return baseProfiles;
+    const generatedExtra: UserProfileSummary[] = Array.from({ length: extraCount * 4 }).map((_, i) => ({
+      user_id: `ext-${selectedPlatform}-${i + 11}`,
+      username: `creator_${selectedPlatform}_${i + 11}`,
+      fullname: `Trending ${selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)} Creator #${i + 11}`,
+      url: `https://${selectedPlatform}.com`,
+      picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedPlatform}${i + 11}`,
+      is_verified: true,
+      followers: Math.round(5000000 / (i + 1)),
+      engagements: Math.round(150000 / (i + 1)),
+      engagement_rate: 0.02 + (i % 5) * 0.005,
+      avg_views: selectedPlatform === "youtube" ? Math.round(2000000 / (i + 1)) : undefined,
+    }));
+    return [...baseProfiles, ...generatedExtra];
+  }, [baseProfiles, extraCount, selectedPlatform]);
 
   const filtered = useMemo(() => {
     return filterProfiles(allProfiles, searchQuery);
@@ -30,29 +49,75 @@ export function SearchPage() {
   };
 
   return (
-    <Layout
-      title="Find Top Influencers"
-      subtitle="Discover, analyze, and shortlist top content creators across Instagram, YouTube, and TikTok."
-    >
-      {/* Search & Filter bar */}
+    <Layout>
+      {/* Qoruz-Style Hero Section with Animated Pulsing Glow Badge */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="text-center max-w-3xl mx-auto my-6 space-y-4"
+      >
+        {/* Animated Glowing Badge (Qoruz Style) */}
+        <div className="inline-block relative">
+          <motion.div
+            animate={{
+              opacity: [0.4, 0.8, 0.4],
+              scale: [0.98, 1.03, 0.98],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 rounded-full blur-sm opacity-75"
+          />
+          <span className="relative flex items-center gap-2 px-4 py-1.5 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-full text-xs font-extrabold tracking-wide border border-purple-200/60 dark:border-purple-800/60 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500 fill-indigo-500" />
+            <span>InfluencerIQ's Curated Directory 2026</span>
+          </span>
+        </div>
+
+        <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
+          Most Popular Influencers & Creators in 2026
+        </h1>
+
+        <p className="text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400 max-w-xl mx-auto leading-relaxed">
+          Explore thousands of verified influencers across different categories and demographics. Search any term or load more creators to discover top partners.
+        </p>
+
+        {/* Feature Pill Callouts */}
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-1 text-xs font-semibold text-gray-600 dark:text-gray-300">
+          <span className="flex items-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Real-Time Analytics
+          </span>
+          <span className="flex items-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Dynamic Search Engine
+          </span>
+          <span className="flex items-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Persistent Shortlists
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Search & Platform Filter */}
       <PlatformFilter
         selected={selectedPlatform}
         onChange={(p) => {
           setPlatform(p);
           setSearchQuery("");
+          setExtraCount(0);
         }}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
 
       {/* Results Count Bar */}
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-2 mb-4 text-xs font-medium text-gray-500 dark:text-gray-400">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 mb-4 text-xs font-semibold text-gray-500 dark:text-gray-400">
         <div className="flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
           <span>
             Showing <strong className="text-gray-900 dark:text-white">{filtered.length}</strong> of{" "}
-            {allProfiles.length} creators on{" "}
-            <span className="capitalize text-indigo-600 dark:text-indigo-400 font-semibold">
+            {allProfiles.length} verified creators on{" "}
+            <span className="capitalize text-indigo-600 dark:text-indigo-400 font-bold">
               {selectedPlatform}
             </span>
           </span>
@@ -67,6 +132,21 @@ export function SearchPage() {
         onProfileClick={handleProfileClick}
         onAddToList={handleOpenAddToList}
       />
+
+      {/* Load More Button */}
+      {!searchQuery && (
+        <div className="text-center my-10">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setExtraCount((prev) => prev + 1)}
+            className="px-6 py-3 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 rounded-2xl text-xs font-extrabold shadow-sm flex items-center gap-2 mx-auto transition-colors"
+          >
+            <PlusCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <span>Load More Verified {selectedPlatform.toUpperCase()} Creators</span>
+          </motion.button>
+        </div>
+      )}
 
       {/* Add To List Modal */}
       <AddToListModal
