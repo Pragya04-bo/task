@@ -55,7 +55,7 @@ export function SearchPage() {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="text-center max-w-3xl mx-auto my-6 space-y-4"
+        className="text-center max-w-3xl mx-auto my-6 space-y-5"
       >
         {/* Animated Glowing Badge (Qoruz Style) */}
         <div className="inline-block relative">
@@ -81,20 +81,21 @@ export function SearchPage() {
           Most Popular Influencers & Creators in 2026
         </h1>
 
-        <p className="text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400 max-w-xl mx-auto leading-relaxed">
+        {/* High-Contrast Visible Sentence Text */}
+        <p className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white max-w-2xl mx-auto leading-relaxed drop-shadow-2xs">
           Explore thousands of verified influencers across different categories and demographics. Search any term or load more creators to discover top partners.
         </p>
 
-        {/* Feature Pill Callouts */}
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-1 text-xs font-semibold text-gray-600 dark:text-gray-300">
-          <span className="flex items-center gap-1.5">
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Real-Time Analytics
+        {/* Crisp Aligned Feature Pill Callouts */}
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2 text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 dark:bg-gray-900/90 rounded-full border border-gray-200 dark:border-gray-800 shadow-2xs backdrop-blur-xs">
+            <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" /> Real-Time Analytics
           </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Dynamic Search Engine
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 dark:bg-gray-900/90 rounded-full border border-gray-200 dark:border-gray-800 shadow-2xs backdrop-blur-xs">
+            <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" /> Dynamic Search Engine
           </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Persistent Shortlists
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 dark:bg-gray-900/90 rounded-full border border-gray-200 dark:border-gray-800 shadow-2xs backdrop-blur-xs">
+            <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" /> Persistent Shortlists
           </span>
         </div>
       </motion.div>
