@@ -18,15 +18,28 @@ export function extractProfiles(platform: Platform): UserProfileSummary[] {
   return data.accounts.map((item) => item.account.user_profile);
 }
 
+export function getProfileIdentifier(profile: UserProfileSummary): string {
+  return profile.username || profile.handle || profile.custom_name || profile.user_id;
+}
+
 export function filterProfiles(
   profiles: UserProfileSummary[],
   query: string
 ): UserProfileSummary[] {
   if (!query) return profiles;
+  const q = query.toLowerCase().trim();
   return profiles.filter((p) => {
-    const matchUsername = p.username.includes(query);
-    const matchFullname = p.fullname.toLowerCase().includes(query.toLowerCase());
-    return matchUsername || matchFullname;
+    const username = (p.username || "").toLowerCase();
+    const handle = (p.handle || "").toLowerCase();
+    const customName = (p.custom_name || "").toLowerCase();
+    const fullname = (p.fullname || "").toLowerCase();
+
+    return (
+      username.includes(q) ||
+      handle.includes(q) ||
+      customName.includes(q) ||
+      fullname.includes(q)
+    );
   });
 }
 
