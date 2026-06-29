@@ -2,6 +2,9 @@
 
 A modern, high-performance web application built with React, TypeScript, Vite, Tailwind CSS, Zustand, Framer Motion, and Vitest. Inspired by industry-leading creator discovery tools like Qoruz and Heepsy, this application allows users to discover top creators across social platforms (Instagram, YouTube, TikTok), inspect detailed performance metrics, and build persistent custom influencer shortlists.
 
+🚀 **Live Deployment URL**: [https://task-sand-one.vercel.app/](https://task-sand-one.vercel.app/)  
+📌 **GitHub Repository**: [https://github.com/Pragya04-bo/task](https://github.com/Pragya04-bo/task)
+
 ---
 
 ## 🛠️ What Changed & Fixes Applied
@@ -45,6 +48,13 @@ A modern, high-performance web application built with React, TypeScript, Vite, T
 
 ---
 
+## 🌐 Live Deployment & Demo
+
+This application is deployed and hosted on Vercel:
+* **Production URL**: [https://task-sand-one.vercel.app/](https://task-sand-one.vercel.app/)
+
+---
+
 ## 📦 Libraries Added
 
 | Library | Version | Purpose |
@@ -84,4 +94,5 @@ The following logical commits represent the development history for this overhau
 11. `feat(search): add dynamic search engine generator and Load More creators feature`
 12. `style(qoruz): add exact animated SVG hexagon moving grid matching Qoruz background structure`
 13. `style(bg): increase SVG hexagon grid visibility and speed up drifting animations`
-14. `docs: add comprehensive README documentation`
+14. `fix(deploy): remove legacy react-beautiful-dnd and add .npmrc for Vercel build`
+15. `docs: add live Vercel deployment link to README`
