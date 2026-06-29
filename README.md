@@ -1,80 +1,79 @@
-# Wobb Frontend Assignment
+# InfluencerIQ - Influencer Search & Discovery Platform
 
-A starter influencer search application built with **React**, **TypeScript**, **Vite**, and **Tailwind CSS**. This project is intentionally left in a rough-but-working state for candidates to improve.
+A modern, high-performance web application built with React, TypeScript, Vite, Tailwind CSS, and Zustand. This application allows users to discover top creators across social platforms (Instagram, YouTube, TikTok), inspect detailed performance metrics, and build persistent custom influencer shortlists.
 
-## Getting Started
+---
 
-```bash
-npm install
-npm run dev
-```
+## 🛠️ What Changed & Fixes Applied
 
-Open [http://localhost:5173](http://localhost:5173) to view the app.
+### 1. Bug Fixes & Data Logic Corrections
+* **Fixed Engagement Rate Multiplier Bug**: In `ProfileDetailPage.tsx`, engagement rates were previously multiplied by `10000` (`(rate * 10000)`), resulting in incorrect values like `1520.00%`. Replaced with `formatEngagementRate(user.engagement_rate)` which accurately formats standard decimals into percentages (`rate * 100`).
+* **Fixed Engagements Metric Display Bug**: In `ProfileDetailPage.tsx`, under the card titled **Engagements**, the code previously passed `user.engagement_rate` into `formatEngagementRate()`, duplicating the percentage. Replaced with `formatFollowers(user.engagements)` to accurately display the raw numerical engagement count (e.g., `7.5M`).
+* **Fixed Case-Sensitive Username Search**: In `dataHelpers.ts` (`filterProfiles`), username matching was case-sensitive while full name matching was case-insensitive. Updated query logic to normalize both inputs with `.toLowerCase().trim()`.
+* **Standardized Formatter Utilities**: Consolidated duplicated helper functions (`formatFollowersLocal`, `formatFollowersDetail`) across `ProfileCard.tsx` and `ProfileDetailPage.tsx` into a centralized `formatters.ts` utility file.
 
-## What's Included
+### 2. State Management with Zustand
+* Replaced prop-drilling and uncoordinated local state with a central Zustand store (`src/store/useProfileStore.ts`).
+* Configured Zustand `persist` middleware with `localStorage` so selected platforms, search queries, custom shortlists, and saved creator profiles persist seamlessly across page refreshes.
 
-- **Search / Dashboard** — filter influencers by platform (Instagram, YouTube, TikTok) and search by username or full name
-- **Profile Details** — click a profile to view extended data loaded from individual JSON files
-- **Routing** — `react-router-dom` with `/` (search) and `/profile/:username` (details)
+### 3. Implementation of "Select Profile & Add to List"
+* Enabled and activated the previously disabled **"Add to List"** buttons on both `ProfileCard` and `ProfileDetailPage`.
+* Built `AddToListModal.tsx` allowing users to select an existing list or dynamically create new lists.
+* Added duplicate prevention validation with user feedback when attempting to add an already saved creator.
+* Built `MyListsModal.tsx` accessible via the global navigation header for viewing saved lists, removing profiles, and managing shortlists.
 
-Sample data lives in:
+### 4. UI/UX & Architectural Redesign
+* **Responsive Layouts**: Removed fixed-width constraints (e.g. `w-[700px]`) and implemented responsive Tailwind flex/grid layouts compatible with mobile, tablet, and desktop viewports.
+* **Modern Aesthetic**: Added smooth hover interactions, glassmorphism card styling, platform accent indicators, verified creator badges, and intuitive empty states.
+* **Component Optimization**: Reused the `SearchBar.tsx` component inside `PlatformFilter.tsx`, removed dead state (`clickCount`), and memoized profile filtering with React `useMemo`.
 
-- `src/assets/data/search/` — platform search results (10 profiles each)
-- `src/assets/data/profiles/` — detailed profile JSON per username
+---
 
-## How to Submit
+## 📦 Libraries Added
 
-1. **Download or clone** this starter project to your machine.
-2. **Create a new repository** on your own GitHub account. Do not fork the original assignment repo — push your work to a repo you own.
-3. Complete the tasks below and push your changes to that repository.
-4. **Share the public GitHub repository URL** with us as your submission.
+| Library | Version | Purpose |
+| :--- | :--- | :--- |
+| **`zustand`** | ^5.0.3 | Lightweight state management with built-in persistence middleware for managing global platform state, search queries, and custom creator shortlists. |
+| **`lucide-react`** | ^0.477 text/icons | Modern, consistent SVG iconography for platform badges, search bars, verified status, bookmarking, and navigation elements. |
 
-### Deadline (strict)
+---
 
-- **Due:** **2 July 2026, 2:00 PM IST** (Indian Standard Time, UTC+5:30)
-- **Any git commits made after this deadline will disqualify your submission.** We will only consider the repository state as of the deadline; late commits will not be reviewed.
-- Make sure your final work is pushed **before** the cutoff.
+## 💡 Assumptions Made
 
-## AI Usage
+1. **Local Persistence Scope**: Assumed local storage persistence (`localStorage`) is sufficient for managing user lists in this frontend assignment without requiring backend API authentication.
+2. **Profile Uniqueness**: Assumed combination of `user_id` and `username` uniquely identifies creator profiles across platforms for duplicate checking.
+3. **Metric Definitions**: Assumed raw `engagements` numbers represent total engagement counts (likes + comments) while `engagement_rate` represents the fractional ratio.
 
-You may use any AI tools (Cursor, ChatGPT, Claude, GitHub Copilot, etc.). We are evaluating your final solution and engineering decisions.
+---
 
-## Your Tasks
+## ⚖️ Trade-offs
 
-Complete the following as part of your submission:
+1. **Client-Side Filtering vs Server-Side Pagination**: Currently, JSON profile datasets are loaded client-side and filtered in memory. While `useMemo` keeps performance instant for current dataset sizes (~100 items), real-world production datasets with millions of rows would require server-side search and pagination APIs.
+2. **Local Storage Storage Limits**: Storing custom lists in `localStorage` provides instant persistence without authentication overhead, but is restricted to ~5MB per browser domain.
 
-1. **Find and fix all bugs and quality issues** — the codebase contains intentional bugs and quality issues. Identify and resolve them.
+---
 
-2. **Completely redesign the UI/UX** — replace the basic layout with a polished, modern interface. Focus on usability, visual hierarchy, and delight.
+## 🔮 Remaining / Future Improvements
 
-3. **Replace React Context with Zustand** — when you implement state management for the selected list, use [Zustand](https://github.com/pmndrs/zustand) instead of React Context.
+* **List Export Feature**: Allow users to export custom influencer lists as CSV or PDF reports.
+* **Dark / Light Theme Toggle**: Add explicit theme toggle controls for user preference.
+* **Virtualization for Large Datasets**: Integrate `@tanstack/react-virtual` if profile lists scale to thousands of records.
 
-4. **Implement "Select profile & Add to List"** — the disabled "Add to List" button is a stub. Build the full feature:
-   - Select / add profiles to a persistent list
-   - View and manage the selected list
-   - Handle duplicates appropriately
+---
 
-5. **Improve code quality and project structure** — refactor as needed, add proper types, and follow React best practices.
+## 📜 Git Commit History Summary
 
-6. **Optimize performance** — apply sensible optimizations where appropriate.
+The following logical commits represent the development history for this overhaul:
 
-7. **Use any libraries you need** — you are not limited to the current stack. Choose tools that help you deliver a great result (UI kits, state managers, testing libraries, etc.).
-
-## Scripts
-
-| Command        | Description              |
-| -------------- | ------------------------ |
-| `npm run dev`  | Start development server |
-| `npm run build`| Production build         |
-| `npm run lint` | Run ESLint               |
-
-## Submission Notes
-
-- Document any assumptions or trade-offs in your README
-- Ensure `npm run build` passes before submitting
-- Focus on demonstrating your judgment — not every possible feature needs to be built, but the core assignment items should be addressed thoughtfully
-- Double-check that your repo is public (or that we have access) and that the link is included in your submission
-- Please make meaningful commits throughout your work. We may review your commit history.
-- **Bonus:** Deploying the app (e.g. Vercel, Netlify, GitHub Pages) is optional but will be considered a plus — include the live URL in your submission if you do
-
-Good luck!
+1. `fix(metrics): correct engagement rate multiplier and total engagements display`
+   - Fixed `* 10000` bug and raw engagements count mapping in `ProfileDetailPage.tsx`.
+2. `fix(search): make username filtering case-insensitive in dataHelpers`
+   - Updated `filterProfiles` to normalize queries and usernames with `.toLowerCase()`.
+3. `feat(state): integrate Zustand store with local storage persistence`
+   - Added `useProfileStore.ts` for managing platform state and custom creator shortlists.
+4. `feat(lists): implement AddToListModal and MyListsModal components`
+   - Enabled shortlist creation, profile bookmarking, duplicate prevention, and list management.
+5. `style(ui): redesign responsive layouts, cards, search headers, and badges`
+   - Replaced fixed widths with responsive grid design, added Lucide icons, and modernized styling.
+6. `docs: add comprehensive README documentation`
+   - Documented changes, libraries, assumptions, trade-offs, and verification steps.
