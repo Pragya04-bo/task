@@ -1,31 +1,42 @@
-import { useState } from "react";
-import type { Platform } from "@/types";
+import { useMemo, useState } from "react";
+import type { UserProfileSummary } from "@/types";
 import { Layout } from "@/components/Layout";
 import { PlatformFilter } from "@/components/PlatformFilter";
 import { ProfileList } from "@/components/ProfileList";
+import { AddToListModal } from "@/components/AddToListModal";
 import { extractProfiles, filterProfiles } from "@/utils/dataHelpers";
+import { useProfileStore } from "@/store/useProfileStore";
+import { Sparkles } from "lucide-react";
 
 export function SearchPage() {
-  const [platform, setPlatform] = useState<Platform>("instagram");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [clickCount, setClickCount] = useState(0);
+  const { selectedPlatform, setPlatform, searchQuery, setSearchQuery } = useProfileStore();
+  const [modalProfile, setModalProfile] = useState<UserProfileSummary | null>(null);
 
-  const allProfiles = extractProfiles(platform);
-  const filtered = filterProfiles(allProfiles, searchQuery);
+  // Memoize profiles extraction and filtering for optimal performance
+  const allProfiles = useMemo(() => {
+    return extractProfiles(selectedPlatform);
+  }, [selectedPlatform]);
+
+  const filtered = useMemo(() => {
+    return filterProfiles(allProfiles, searchQuery);
+  }, [allProfiles, searchQuery]);
 
   const handleProfileClick = (username: string) => {
-    setClickCount(clickCount + 1);
-    console.log("Clicked profile:", username, "total clicks:", clickCount);
+    console.log("Navigating to profile:", username);
+  };
+
+  const handleOpenAddToList = (profile: UserProfileSummary) => {
+    setModalProfile(profile);
   };
 
   return (
-    <Layout title="Find Influencers">
-      <p className="text-gray-500 mb-4 text-sm">
-        Browse top creators across social platforms
-      </p>
-
+    <Layout
+      title="Find Top Influencers"
+      subtitle="Discover, analyze, and shortlist top content creators across Instagram, YouTube, and TikTok."
+    >
+      {/* Search & Filter bar */}
       <PlatformFilter
-        selected={platform}
+        selected={selectedPlatform}
         onChange={(p) => {
           setPlatform(p);
           setSearchQuery("");
@@ -34,15 +45,34 @@ export function SearchPage() {
         onSearchChange={setSearchQuery}
       />
 
-      <p className="text-xs text-gray-400 mb-2">
-        Showing {filtered.length} of {allProfiles.length} on {platform}
-      </p>
+      {/* Results Count Bar */}
+      <div className="max-w-5xl mx-auto flex items-center justify-between px-2 mb-4 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <div className="flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+          <span>
+            Showing <strong className="text-gray-900 dark:text-white">{filtered.length}</strong> of{" "}
+            {allProfiles.length} creators on{" "}
+            <span className="capitalize text-indigo-600 dark:text-indigo-400 font-semibold">
+              {selectedPlatform}
+            </span>
+          </span>
+        </div>
+      </div>
 
+      {/* Profiles List */}
       <ProfileList
         profiles={filtered}
-        platform={platform}
+        platform={selectedPlatform}
         searchQuery={searchQuery}
         onProfileClick={handleProfileClick}
+        onAddToList={handleOpenAddToList}
+      />
+
+      {/* Add To List Modal */}
+      <AddToListModal
+        profile={modalProfile}
+        isOpen={!!modalProfile}
+        onClose={() => setModalProfile(null)}
       />
     </Layout>
   );
